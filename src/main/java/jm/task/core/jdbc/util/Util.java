@@ -17,19 +17,9 @@ public class Util {
     private static final String URL = "jdbc:mysql://localhost:3306/table_users";
     private static final String USERNAME = "root";
     private static final String PASSWORD = "SAnny2626$";
+    private static final SessionFactory SESSION_FACTORY;
 
-    public static Connection getConnection() {
-        try {
-            return DriverManager.getConnection(URL, USERNAME, PASSWORD);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    private static final SessionFactory sessionFactory = buildSessionFactory();
-
-    public static SessionFactory buildSessionFactory() {
+    static {
         try {
             Configuration configuration = new Configuration();
 
@@ -47,22 +37,37 @@ public class Util {
             configuration.addAnnotatedClass(User.class);
 
             ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
-                    .applySettings(configuration.getProperties()).build();
+                    .applySettings(configuration.getProperties())
+                    .build();
 
-            return configuration.buildSessionFactory(serviceRegistry);
+            SESSION_FACTORY = configuration.buildSessionFactory(serviceRegistry);
         } catch (Exception ex) {
-            System.err.println("Ошибка при первоначальном создании SessionFactory: " + ex);
-            throw new ExceptionInInitializerError(ex);
+            System.err.println("Ошибка при создании SessionFactory: " + ex.getMessage());
+            ex.printStackTrace();
+            throw new ExceptionInInitializerError("Инициализация SessionFactory не удалась: " + ex);
+        }
+    }
+
+    private Util() {
+        throw new UnsupportedOperationException("Этот класс нельзя инстанцировать.");
+    }
+
+    public static Connection getConnection() {
+        try {
+            return DriverManager.getConnection(URL, USERNAME, PASSWORD);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
         }
     }
 
     public static SessionFactory getSessionFactory() {
-        return sessionFactory;
+        return SESSION_FACTORY;
     }
 
     public static void shutdown() {
-        if (sessionFactory != null) {
-            sessionFactory.close();
+        if (SESSION_FACTORY != null) {
+            SESSION_FACTORY.close();
         }
     }
 }
