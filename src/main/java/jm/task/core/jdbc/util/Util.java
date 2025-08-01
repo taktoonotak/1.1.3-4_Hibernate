@@ -33,13 +33,12 @@ public class Util {
         try {
             Configuration configuration = new Configuration();
 
-
             Properties settings = new Properties();
             settings.put(Environment.DRIVER, DB_DRIVER);
             settings.put(Environment.URL, URL);
             settings.put(Environment.USER, USERNAME);
             settings.put(Environment.PASS, PASSWORD);
-            settings.put(Environment.DIALECT, "org.hibernate.dialect.MySQLDialect");
+            settings.put(Environment.DIALECT, "org.hibernate.dialect.MySQL8Dialect");
             settings.put(Environment.SHOW_SQL, "true");
             settings.put(Environment.HBM2DDL_AUTO, "update");
             settings.put(Environment.CURRENT_SESSION_CONTEXT_CLASS, "thread");
